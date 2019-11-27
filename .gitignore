@@ -6,6 +6,7 @@ cfg.py
 *.pth
 *.h5
 *.yaml
+*.tfevents.*
 
 runs/
 
