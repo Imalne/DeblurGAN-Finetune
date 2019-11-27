@@ -57,7 +57,7 @@ class Trainer:
             model.load_state_dict(torch.load(self.config['save_weight_path'])['model'])
             print("load from save weight")
         else:
-            model.load_state_dict(torch.load(self.config['weight_path'])['model'])
+            model.load_state_dict(torch.load(self.config['pre_weight_path'])['model'])
             print("load from pre weight")
         self.netG =model.cuda()
         self.optimizer_G = self._get_optim(filter(lambda p: p.requires_grad, self.netG.parameters()))
