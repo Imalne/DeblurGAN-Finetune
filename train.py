@@ -1,8 +1,6 @@
 from dataset import PairedDataset
 import yaml
 from torch.utils.data import DataLoader
-import cv2
-import numpy as np
 from models.networks import get_generator
 from models.losses import get_loss
 from models.losses import LMG_Loss
@@ -79,7 +77,7 @@ class Trainer:
             self.optimizer_G.zero_grad()
             loss_content = self.criterionG(output, tar)
             loss_lmg = self.LMG_Loss(output)
-            loss_total = loss_content + loss_lmg
+            loss_total = config.get("loss_weight")[0] * loss_content + config.get("loss_weight")[1] * loss_lmg
             loss_total.backward()
 
             curr_psnr, curr_ssim, img_for_vis = self.model.get_images_and_metrics(inp, output, tar)
@@ -105,7 +103,7 @@ class Trainer:
             output = self.netG(inp)
             loss_content = self.criterionG(output, tar)
             loss_lmg = self.LMG_Loss(output)
-            loss_total = loss_content + loss_lmg
+            loss_total = config.get("loss_weight")[0] * loss_content + config.get("loss_weight")[1] * loss_lmg
 
             curr_psnr, curr_ssim, img_for_vis = self.model.get_images_and_metrics(inp, output, tar)
             self.metric_counter.add_criterion([('l_total', loss_total.detach().cpu().numpy()), ('l_content', loss_content.detach().cpu().numpy()), ('l_lmg', loss_lmg.detach().cpu().numpy())])
