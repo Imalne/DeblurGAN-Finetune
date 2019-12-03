@@ -85,11 +85,13 @@ class Trainer:
             self.metric_counter.add_metrics(curr_psnr, curr_ssim)
             if b_id == 0:
                 self.metric_counter.add_image(img_for_vis, tag='train')
-            print(str.format("epoch {:d}:{:6d}/{:6d}  content_loss: {:f}",
+            print(str.format("epoch {:d}:{:6d}/{:6d}  content_loss: {:f} lmg_loss: {:f} total_loss: {:f} ",
                              epoch,
                              b_id*train_loader.batch_size,
                              len(train_loader.dataset),
-                             loss_content)
+                             loss_content,
+                             loss_lmg,
+                             loss_total)
                   )
         torch.cuda.empty_cache()
         self.metric_counter.write_to_tensorboard(epoch)
