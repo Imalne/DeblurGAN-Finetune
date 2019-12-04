@@ -114,6 +114,11 @@ class Trainer:
                 self.metric_counter.add_image(img_for_vis, tag='val')
         torch.cuda.empty_cache()
 
+        if self.metric_counter.update_best_model():
+            torch.save({
+                'model': self.netG.state_dict(),
+            }, 'best_{}.h5'.format(self.config['experiment_desc']))
+
         self.metric_counter.write_to_tensorboard(epoch, validation=True)
         print("validate complete")
 
@@ -130,10 +135,10 @@ class Trainer:
             self._valid(epoch)
             self.scheduler_G.step()
 
-            if self.metric_counter.update_best_model():
-                torch.save({
-                    'model': self.netG.state_dict(),
-                }, 'best_{}.h5'.format(self.config['experiment_desc']))
+            # if self.metric_counter.update_best_model():
+            #     torch.save({
+            #         'model': self.netG.state_dict(),
+            #     }, 'best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
                 'model': self.netG.state_dict(),
             }, 'last_{}.h5'.format(self.config['experiment_desc']))
