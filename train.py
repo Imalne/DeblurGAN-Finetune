@@ -50,9 +50,11 @@ class Trainer:
         return scheduler
 
     def _init_params(self):
+        self.start_epoch = 0
         model = get_generator(self.config['model'])
         if os.path.exists(self.config['save_weight_path']):
             model.load_state_dict(torch.load(self.config['save_weight_path'])['model'])
+            self.start_epoch = torch.load(self.config['save_weight_path'])['epoch']
             print("load from save weight")
         else:
             model.load_state_dict(torch.load(self.config['pre_weight_path'])['model'])
@@ -124,7 +126,7 @@ class Trainer:
 
     def train(self):
         self._init_params()
-        for epoch in range(0, config['num_epochs']):
+        for epoch in range(self.start_epoch, config['num_epochs']):
             if (epoch == self.warmup_epochs) and not (self.warmup_epochs == 0):
                 self.netG.module.unfreeze()
                 self.optimizer_G = self._get_optim(self.netG.parameters())
@@ -141,6 +143,7 @@ class Trainer:
             #     }, 'best_{}.h5'.format(self.config['experiment_desc']))
             torch.save({
                 'model': self.netG.state_dict(),
+                'epoch': epoch
             }, 'last_{}.h5'.format(self.config['experiment_desc']))
             print(self.metric_counter.loss_message())
 
